@@ -1,5 +1,7 @@
 const app = require("./app");
 const db = require("./models/database");
+const host = '0.0.0.0';
+
 
 require("dotenv").config();
 
@@ -11,8 +13,9 @@ db.sequelize
 // // db.BCDS_Achievement.sync({ alter: true }); //force: true
 // // db.sequelize.sync({ alter: true }); //force: true
 
-const port = process.env.PORT || 3600;
+const port = 8080;
 
-app.listen(port, () =>
-  console.log(`Server listening on http://localhost:${port}`)
+app.listen(port, host, () =>
+  console.log(`Server listening on http://${host}:${port}`)
 );
+
