@@ -31,6 +31,23 @@ async function sqlInsert(shortDBName, queryObj={}){
     throw error("No values / fields for insert statement");
 }
 
+async function sqlMultipleInsert(queryObj={}){
+    if(Object.keys(queryObj).length)
+    {
+        try{
+            return await db.sequelize.transaction(async (t) => {
+                const result = {}
+                for(const[key, value] of Object.entries(queryObj))
+                    result[key] = await db.sequelize.query(`Insert into ${getDBName(key)} (${getInsertKeys(value)}) values (${getInsertValues(value)})`, {type: QueryTypes.INSERT, transaction: t})
+                return result
+            }) 
+        }catch (error){
+            throw error(error);
+        }
+    } else
+        throw error("No values / fields for insert statement");
+}
+
 async function getTableInfo(shortDBName){
     if(shortDBName)
         return await db.sequelize.query(`SELECT ORDINAL_POSITION,COLUMN_NAME,COLUMN_DEFAULT ,IS_NULLABLE,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH,NUMERIC_PRECISION,NUMERIC_SCALE,DATETIME_PRECISION,CHARACTER_SET_NAME,COLLATION_NAME  from INFORMATION_SCHEMA.COLUMNS where  table_name = '${shortDBName}'`)
@@ -142,6 +159,6 @@ function getFieldList(fieldArray){
     return actualFieldList
 }
 
-const sqlCommands = {sqlFind, sqlInsert, sqlUpdate, sqlDelete}
+const sqlCommands = {sqlFind, sqlInsert, sqlUpdate, sqlDelete, sqlMultipleInsert}
 
 module.exports = sqlCommands

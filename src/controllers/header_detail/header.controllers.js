@@ -25,10 +25,14 @@ const headerFind = (req, res, next)=> {
     .catch(error => next(error))   
 }
 const headerCreate = async(req, res, next)=> {
-    console.log(req.body)
-    
     sqlCommands.sqlInsert(tableNames.header_table, req.body)
     .then(() => res.status(201).json(req.body))
+    .catch(error => next(error))   
+}
+
+const multipleTableCreate = async(req, res, next)=> {
+    sqlCommands.sqlMultipleInsert(req.body)
+    .then((result) => res.status(201).json(result))
     .catch(error => next(error))   
 }
 
@@ -62,7 +66,7 @@ const headerUpdate = (req, res, next)=> {
       
 }
 
-const headerControllers = {headerList, headerFind, headerCreate, headerDelete, headerUpdate}
+const headerControllers = {headerList, headerFind, headerCreate, headerDelete, headerUpdate, multipleTableCreate}
 
 
 module.exports = headerControllers

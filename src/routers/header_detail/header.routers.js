@@ -7,6 +7,7 @@ headerRoutes.get("/find/:vr_no", controllers.headerControllers.headerFind);
 headerRoutes.get("/", controllers.headerControllers.headerList);
 headerRoutes.put("/:vr_no", controllers.headerControllers.headerUpdate);
 headerRoutes.post("/", controllers.headerControllers.headerCreate);
+headerRoutes.post("/multiple", controllers.headerControllers.multipleTableCreate);
 headerRoutes.delete("/:vr_no", controllers.headerControllers.headerDelete);
 
 
