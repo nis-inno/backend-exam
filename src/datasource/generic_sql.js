@@ -37,8 +37,14 @@ async function sqlMultipleInsert(queryObj={}){
         try{
             return await db.sequelize.transaction(async (t) => {
                 const result = {}
-                for(const[key, value] of Object.entries(queryObj))
-                    result[key] = await db.sequelize.query(`Insert into ${getDBName(key)} (${getInsertKeys(value)}) values (${getInsertValues(value)})`, {type: QueryTypes.INSERT, transaction: t})
+                for(const[key, value] of Object.entries(queryObj)){
+                    if(value instanceof Array && value.length)
+                        result[key] = await db.sequelize.query(`Insert into ${getDBName(key)} ${multipleRowInsert(value)}`, {type: QueryTypes.INSERT, transaction: t})
+                    else if(value instanceof Object && Object.keys(value).length)
+                        result[key] = await db.sequelize.query(`Insert into ${getDBName(key)} (${getInsertKeys(value)}) values (${getInsertValues(value)})`, {type: QueryTypes.INSERT, transaction: t})
+                    else
+                        throw error(`No values / fields for ${key} insert statement`);
+                }
                 return result
             }) 
         }catch (error){
@@ -54,6 +60,38 @@ async function getTableInfo(shortDBName){
     throw error(`No such '${shortDBName}'`);
 }
 
+async function multipleRowInsert(array){
+    const values = ""
+    const keys = Object.keys(array[0])
+    keys.forEach((item, index)=> {
+        if(index ===0)
+            values = `(${item}`
+        else
+            values += `, ${item}`
+    })
+    values += ') VALUES '
+    array.forEach((item, ind)=> {
+        const value = ""
+        keys.forEach((key, index)=> {
+            if(index === 0)
+                if(typeof item[key] === "string")
+                    value = `('${item[key]}'`
+                else
+                    value = `(${item[key]}`
+            else 
+                if(typeof item['key'] === "string")
+                    value += `, '${item[key]}'`
+                else
+                    value += `, ${item[key]}`
+        })
+        value += ')'
+        if(ind === 0)
+            values += value
+        else
+            values += `, ${value}`
+    })
+    return values
+}
 
 function getDBName(dbName){
     const trimmedDBName = dbName.trim()
