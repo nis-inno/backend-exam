@@ -31,7 +31,13 @@ const headerCreate = async(req, res, next)=> {
 }
 
 const multipleTableCreate = async(req, res, next)=> {
-    sqlCommands.sqlMultipleInsert(req.body)
+    console.log(req.body)
+    let body
+    if(typeof req.body === "string")
+        body = JSON.parse(req.body)
+    else
+        body = req.body
+    sqlCommands.sqlMultipleInsert(body)
     .then((result) => res.status(201).json(result))
     .catch(error => next(error))   
 }

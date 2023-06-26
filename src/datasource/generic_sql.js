@@ -60,8 +60,8 @@ async function getTableInfo(shortDBName){
     throw error(`No such '${shortDBName}'`);
 }
 
-async function multipleRowInsert(array){
-    const values = ""
+function multipleRowInsert(array){
+    let values = ""
     const keys = Object.keys(array[0])
     keys.forEach((item, index)=> {
         if(index ===0)
@@ -71,7 +71,7 @@ async function multipleRowInsert(array){
     })
     values += ') VALUES '
     array.forEach((item, ind)=> {
-        const value = ""
+        let value = ""
         keys.forEach((key, index)=> {
             if(index === 0)
                 if(typeof item[key] === "string")
@@ -79,7 +79,7 @@ async function multipleRowInsert(array){
                 else
                     value = `(${item[key]}`
             else 
-                if(typeof item['key'] === "string")
+                if(typeof item[key] === "string")
                     value += `, '${item[key]}'`
                 else
                     value += `, ${item[key]}`
